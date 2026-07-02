@@ -27,3 +27,16 @@ class User(Base):
         DateTime(timezone=True),
         server_default=func.now()
     )
+    pharmacy_name = Column(
+    String(200),
+    nullable=False
+    )
+    owner_name = Column(
+    String(200),
+    nullable=False
+    )
+
+    phone = Column(
+        String(20),
+        nullable=False
+    )

@@ -2,6 +2,8 @@ from fastapi import APIRouter
 from fastapi import Depends
 
 from sqlalchemy.orm import Session
+from app.auth.dependencies import get_current_user
+from app.models.user import User
 
 from app.database.database import get_db
 
@@ -26,8 +28,12 @@ router = APIRouter(
 )
 def add_inventory(
     inventory: InventoryCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
+    user = db.query(User).filter(
+    User.email == current_user["sub"]
+    ).first()
 
     new_batch = InventoryBatch(
         medicine_id=inventory.medicine_id,
@@ -42,7 +48,8 @@ def add_inventory(
         cost_price=inventory.cost_price,
         selling_price=inventory.selling_price,
 
-        quantity=inventory.quantity
+        quantity=inventory.quantity,
+        user_id=user.id
     )
 
     db.add(new_batch)
@@ -57,9 +64,15 @@ def add_inventory(
     response_model=list[InventoryResponse]
 )
 def get_inventory(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
+    user = db.query(User).filter(
+    User.email == current_user["sub"]
+    ).first()
 
     return db.query(
-        InventoryBatch
+    InventoryBatch
+    ).filter(
+        InventoryBatch.user_id == user.id
     ).all()

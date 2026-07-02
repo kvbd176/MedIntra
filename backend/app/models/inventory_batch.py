@@ -70,3 +70,8 @@ class InventoryBatch(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+    user_id = Column(
+    Integer,
+    ForeignKey("users.id"),
+    nullable=False
+    )

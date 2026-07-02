@@ -1,6 +1,6 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
-from sqlalchemy import String
+from sqlalchemy import Float
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 
@@ -9,29 +9,24 @@ from datetime import datetime
 from app.database.database import Base
 
 
-class Medicine(Base):
-    __tablename__ = "medicines"
-    medicine_id = Column(
+class Invoice(Base):
+    __tablename__ = "invoices"
+    invoice_id = Column(
         Integer,
         primary_key=True,
         index=True
     )
-    medicine_name = Column(
-        String,
-        nullable=False
+    customer_id = Column(
+        Integer,
+        ForeignKey("customers.customer_id")
     )
-    manufacturer = Column(
-        String,
-        nullable=False
+    total_amount = Column(
+        Float,
+        default=0
     )
     created_at = Column(
         DateTime,
         default=datetime.utcnow
-    )
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
     )
     user_id = Column(
     Integer,

@@ -2,33 +2,39 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 
+from fastapi.security import OAuth2PasswordRequestForm
+
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 
 from app.models.user import User
 
-from app.schemas.user_schema import(
-    UserRegister,
-    UserLogin
-)
+from app.schemas.user_schema import UserRegister
 
-from app.auth.security import(
+from app.auth.security import (
     hash_password,
     verify_password
 )
 
-from app.auth.jwt_handler import(
+from app.auth.jwt_handler import (
     create_access_token
 )
 
-router=APIRouter()
+from app.auth.dependencies import (
+    get_current_user
+)
+
+router = APIRouter()
 
 
 @router.post("/register")
-def register_user(user:UserRegister,db:Session=Depends(get_db)):
-    existing_user=db.query(User).filter(
-        User.email==user.email
+def register_user(
+    user: UserRegister,
+    db: Session = Depends(get_db)
+):
+    existing_user = db.query(User).filter(
+        User.email == user.email
     ).first()
 
     if existing_user:
@@ -36,49 +42,68 @@ def register_user(user:UserRegister,db:Session=Depends(get_db)):
             status_code=400,
             detail="Email already registered"
         )
-    new_user=User(
+
+    new_user = User(
         username=user.username,
         email=user.email,
         password_hash=hash_password(
             user.password
-        )
+        ),
+        pharmacy_name=user.pharmacy_name,
+        owner_name=user.owner_name,
+        phone=user.phone
     )
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"message":"User registered successfully"}
+
+    return {
+        "message": "User registered successfully"
+    }
+
 
 @router.post("/login")
 def login_user(
-    user: UserLogin,
-    db: Session=Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ):
-    db_user=db.query(User).filter(User.email==user.email).first()
+
+    db_user = db.query(User).filter(
+        User.email == form_data.username
+    ).first()
+
     if not db_user:
         raise HTTPException(
             status_code=401,
-            detail="Invalid credentials"
+            detail="Invalid email or password"
         )
+
     if not verify_password(
-        user.password,
+        form_data.password,
         db_user.password_hash
     ):
         raise HTTPException(
             status_code=401,
-            detail="Invalid credentials"
+            detail="Invalid email or password"
         )
-    token=create_access_token({"sub": db_user.email})
-    return{
-        "access_token":token,
-        "token_type":"bearer"
+
+    token = create_access_token(
+        {"sub": db_user.email}
+    )
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
     }
 
-from app.auth.dependencies import (
-    get_current_user
-)
 
+@router.get("/test-token")
+def test_token(
+    current_user=Depends(get_current_user)
+):
+    return current_user
 
-from fastapi import Header
 
 @router.get("/me")
 def get_me(

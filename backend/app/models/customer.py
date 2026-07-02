@@ -9,29 +9,25 @@ from datetime import datetime
 from app.database.database import Base
 
 
-class Medicine(Base):
-    __tablename__ = "medicines"
-    medicine_id = Column(
+class Customer(Base):
+    __tablename__ = "customers"
+    customer_id = Column(
         Integer,
         primary_key=True,
         index=True
     )
-    medicine_name = Column(
+    customer_name = Column(
         String,
         nullable=False
     )
-    manufacturer = Column(
+    phone_number = Column(
         String,
+        unique=True,
         nullable=False
     )
     created_at = Column(
         DateTime,
         default=datetime.utcnow
-    )
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
     )
     user_id = Column(
     Integer,
