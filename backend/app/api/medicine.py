@@ -60,28 +60,6 @@ def get_medicines(
     Medicine.user_id == user.id
     ).all()
 
-#search by medicine
-@router.get("/search/{medicine_name}")
-def search_medicine(
-    medicine_name: str,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
-):
-    user = db.query(User).filter(
-    User.email == current_user["sub"]
-    ).first()
-
-    medicines = db.query(
-        Medicine
-    ).filter(
-        Medicine.medicine_name.ilike(
-            f"%{medicine_name}%"
-        ),
-        Medicine.user_id==user.id
-    ).all()
-
-    return medicines
-
 #search by manufacturer
 @router.get("/search")
 def search_medicine_with_manufacturer(
@@ -112,4 +90,12 @@ def search_medicine_with_manufacturer(
             Medicine.user_id==user.id
         )
 
-    return query.all()
+    result = query.all()
+
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="Medicine not found"
+        )
+
+    return result

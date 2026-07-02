@@ -60,6 +60,10 @@ class InventoryBatch(Base):
         Integer
     )
 
+    initial_quantity = Column(
+        Integer
+    )
+
     created_at = Column(
         DateTime,
         default=datetime.utcnow

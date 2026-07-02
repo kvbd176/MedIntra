@@ -7,5 +7,6 @@ class InvoiceItemCreate(BaseModel):
 
 
 class InvoiceCreate(BaseModel):
-    customer_id: int
+    customer_name: str
+    phone_number: str
     items: list[InvoiceItemCreate]

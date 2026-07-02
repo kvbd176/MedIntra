@@ -49,6 +49,7 @@ def add_inventory(
         selling_price=inventory.selling_price,
 
         quantity=inventory.quantity,
+        initial_quantity=inventory.quantity,
         user_id=user.id
     )
 

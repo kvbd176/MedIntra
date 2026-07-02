@@ -98,13 +98,6 @@ def login_user(
     }
 
 
-@router.get("/test-token")
-def test_token(
-    current_user=Depends(get_current_user)
-):
-    return current_user
-
-
 @router.get("/me")
 def get_me(
     current_user=Depends(get_current_user)

@@ -12,6 +12,8 @@ from app.models.invoice_item import InvoiceItem
 from app.models.customer import Customer
 from app.models.medicine import Medicine
 
+from fastapi import HTTPException
+
 from app.utils.pdf_generator import (
     generate_invoice_pdf
 )
@@ -41,6 +43,12 @@ def generate_pdf(
         Invoice.invoice_id == invoice_id,
         Invoice.user_id==user.id
     ).first()
+
+    if not invoice:
+        raise HTTPException(
+            status_code=404,
+            detail="Invoice not found"
+        )
 
     customer = db.query(
         Customer

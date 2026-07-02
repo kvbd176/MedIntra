@@ -12,6 +12,8 @@ from app.models.invoice_item import InvoiceItem
 from app.models.customer import Customer
 from app.models.medicine import Medicine
 
+from fastapi import HTTPException
+
 router = APIRouter(
     prefix="/invoices",
     tags=["Invoices"]
@@ -58,7 +60,10 @@ def get_invoices(
             customer.phone_number,
 
             "total_amount":
-            invoice.total_amount
+            invoice.total_amount,
+
+            "invoice_date":
+            invoice.created_at
         })
 
     return result
@@ -83,9 +88,10 @@ def get_invoice(
     ).first()
 
     if not invoice:
-        return {
-            "message": "Invoice not found"
-        }
+        raise HTTPException(
+        status_code=404,
+        detail="Invoice not found"
+        )
 
     customer = db.query(
         Customer
@@ -122,5 +128,7 @@ def get_invoice(
         "customer_name": customer.customer_name,
         "customer_phone": customer.phone_number,
         "total_amount": invoice.total_amount,
+        "pdf_url":
+        f"/pdf/invoice/{invoice.invoice_id}",
         "items": invoice_items
     }

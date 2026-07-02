@@ -21,20 +21,55 @@ router = APIRouter(
     tags=["Billing"]
 )
 
+from app.models.customer import Customer
+
+
 @router.post("/create-invoice")
 def create_invoice(
     invoice_data: InvoiceCreate,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
+
     user = db.query(User).filter(
-    User.email == current_user["sub"]
+        User.email == current_user["sub"]
     ).first()
+
+    # --------------------------
+    # Find customer by phone
+    # --------------------------
+
+    customer = db.query(
+        Customer
+    ).filter(
+        Customer.phone_number == invoice_data.phone_number,
+        Customer.user_id == user.id
+    ).first()
+
+    # --------------------------
+    # Create customer if not found
+    # --------------------------
+
+    if not customer:
+
+        customer = Customer(
+            customer_name=invoice_data.customer_name,
+            phone_number=invoice_data.phone_number,
+            user_id=user.id
+        )
+
+        db.add(customer)
+        db.commit()
+        db.refresh(customer)
+
+    # --------------------------
+    # Create invoice
+    # --------------------------
 
     total_amount = 0
 
     invoice = Invoice(
-        customer_id=invoice_data.customer_id,
+        customer_id=customer.customer_id,
         total_amount=0,
         user_id=user.id
     )
@@ -43,13 +78,17 @@ def create_invoice(
     db.commit()
     db.refresh(invoice)
 
+    # --------------------------
+    # Process medicines
+    # --------------------------
+
     for item in invoice_data.items:
 
         batch = db.query(
             InventoryBatch
         ).filter(
             InventoryBatch.medicine_id == item.medicine_id,
-            InventoryBatch.user_id==user.id
+            InventoryBatch.user_id == user.id
         ).first()
 
         if not batch:
@@ -91,5 +130,7 @@ def create_invoice(
 
     return {
         "invoice_id": invoice.invoice_id,
+        "customer_name": customer.customer_name,
+        "phone_number": customer.phone_number,
         "total_amount": total_amount
     }
