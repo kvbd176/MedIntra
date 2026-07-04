@@ -6,6 +6,8 @@ import {
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Medicines from "./pages/Medicines";
+import Inventory from "./pages/Inventory";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -25,6 +27,20 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/medicines"
+          element={<Medicines />}
+        />
+
+        <Route
+          path="/inventory"
+          element={
+            <ProtectedRoute>
+              <Inventory />
             </ProtectedRoute>
           }
         />

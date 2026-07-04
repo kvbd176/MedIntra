@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import Sidebar from "../components/Sidebar";
+import StatCard from "../components/StatCard";
+import Card from "../components/Card";
+import Layout from "../components/Layout";
 
 function Dashboard() {
   const [summary, setSummary] = useState({
@@ -59,61 +62,66 @@ function Dashboard() {
     };
     fetchDashboard();
   }, []);
-  return (
-  <div
-    style={{
-      display: "flex"
-    }}
-  >
-    <Sidebar />
-    <div
-      style={{
-        padding: "20px"
-      }}
-    >
-      <h1>Dashboard</h1>
-        <div>
-            <h2>Total Medicines</h2>
-            <h3>{summary.total_medicines}</h3>
+
+
+  
+  return(
+  <Layout>
+
+      <h1 className="text-4xl font-bold text-blue-600">
+        Dashboard
+      </h1>
+
+        <div className="grid grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Medicines"
+            value={summary.total_medicines}
+          />
+          <StatCard
+            title="Customers"
+            value={summary.total_customers}
+          />
+          <StatCard
+            title="Invoices"
+            value={summary.total_invoices}
+          />
+          <StatCard
+            title="Inventory Value"
+            value={`₹ ${inventoryValue}`}
+          />
         </div>
 
-        <div>
-            <h2>Total Customers</h2>
-            <h3>{summary.total_customers}</h3>
-        </div>
 
-        <div>
-            <h2>Total Invoices</h2>
-            <h3>{summary.total_invoices}</h3>
-        </div>
-
-        <div>
-            <h2>Inventory Value</h2>
-            <h3>₹ {inventoryValue}</h3>
-        </div>
-        <h2>Low Stock Alerts</h2>
-        {lowStock.length === 0 ? (
-        <p>No low stock medicines</p>
-        ) : (
+        <Card>
+        <h2 className="text-xl font-semibold mb-4">
+          Low Stock Alerts
+        </h2>
+        {lowStock.length==0?(<p>No low stock medicines</p>): 
+        (
         lowStock.map((item) => (
             <div key={item.batch_number}>
-            {item.medicine_name} - Qty: {item.quantity}
+            {item.medicine_name}-Qty:{item.quantity}
             </div>
         ))
         )}
-        <h2>Expiring Medicines</h2>
-        {expiring.length === 0 ? (
-        <p>No medicines expiring soon</p>
-        ) : (
-        expiring.map((item) => (
+        </Card>
+
+
+        <Card>
+        <h2 className="text-xl font-semibold mb-4">
+          Expiring Medicines
+        </h2>
+        {expiring.length==0?(<p>No medicines expiring soon</p>): 
+        (
+        expiring.map((item)=>(
             <div key={item.batch_number}>
             {item.medicine_name} - {item.days_left} days left
             </div>
         ))
         )}
+        </Card>
 
-    </div>
-  </div>
+    </Layout>
 );
 }
 

@@ -24,9 +24,13 @@ function Sidebar() {
         </Link>
       </p>
 
-      <p>Medicines</p>
+      <p><Link to="/medicines">
+        Medicines
+      </Link></p>
 
-      <p>Inventory</p>
+      <p><Link to="/inventory">
+        Inventory
+      </Link></p>
 
       <p>Customers</p>
 
