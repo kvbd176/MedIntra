@@ -32,13 +32,21 @@ function Sidebar() {
         Inventory
       </Link></p>
 
-      <p>Customers</p>
+      <p><Link to="/customers">
+        Customers
+      </Link></p>
 
-      <p>Distributors</p>
+      <p><Link to="/distributors">
+        Distributors
+      </Link></p>
 
-      <p>Billing</p>
+      <p><Link to="/billing">
+        Billing
+      </Link></p>
 
-      <p>Invoices</p>
+      <p><Link to="/invoices">
+        Invoices
+      </Link></p>
 
       <p>AI Assistant</p>
 

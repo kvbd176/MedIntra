@@ -20,6 +20,11 @@ class Medicine(Base):
         String,
         nullable=False
     )
+    quantity = Column(
+        Integer, 
+        default=0
+    )
+
     manufacturer = Column(
         String,
         nullable=False

@@ -76,6 +76,7 @@ return (
         "Batch",
         "Medicine",
         "Distributor",
+        "Manufacturer",
         "Bought Qty",
         "Current Qty",
         "Cost",
@@ -94,7 +95,9 @@ return (
             <td className="border p-2">
               {item.distributor_name}
             </td>
-
+            <td className="border p-2">
+              {item.manufacturer}
+            </td>
             <td className="border p-2">
             {item.initial_quantity}
             </td>

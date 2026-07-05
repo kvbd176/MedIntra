@@ -108,7 +108,8 @@ function Medicines() {
           headers={[
             "ID",
             "Medicine Name",
-            "Manufacturer"
+            "Manufacturer",
+            "Quantity"
           ]}
         >
 
@@ -130,6 +131,7 @@ function Medicines() {
                 <td className="border p-2">
                   {medicine.manufacturer}
                 </td>
+                <td className="border p-2">{medicine.quantity}</td>
 
               </tr>
 

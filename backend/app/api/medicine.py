@@ -34,6 +34,7 @@ def add_medicine(
     new_medicine = Medicine(
     medicine_name=medicine.medicine_name,
     manufacturer=medicine.manufacturer,
+    quantity=0,
     user_id=user.id
     )
 

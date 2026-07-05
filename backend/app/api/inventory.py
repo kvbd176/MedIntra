@@ -55,8 +55,13 @@ def add_inventory(
         initial_quantity=inventory.quantity,
         user_id=user.id
     )
+    
 
     db.add(new_batch)
+    medicine=db.query(Medicine).filter(
+    Medicine.medicine_id==inventory.medicine_id
+    ).first()
+    medicine.quantity+=inventory.quantity
     db.commit()
     db.refresh(new_batch)
 
@@ -111,6 +116,9 @@ def get_inventory(
 
             "distributor_name":
             distributor.distributor_name,
+
+            "manufacturer":
+            medicine.manufacturer,
 
             "batch_number":
             batch.batch_number,

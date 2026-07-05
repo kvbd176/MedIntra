@@ -116,3 +116,26 @@ def customer_history(
         "total_spent": total_spent,
         "purchase_history": purchase_history
     }
+
+@router.get("/phone/{phone_number}")
+def get_customer_by_phone(
+    phone_number: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    user = db.query(User).filter(
+        User.email == current_user["sub"]
+    ).first()
+
+    customer = db.query(Customer).filter(
+        Customer.phone_number == phone_number,
+        Customer.user_id == user.id
+    ).first()
+
+    if not customer:
+        raise HTTPException(
+            status_code=404,
+            detail="Customer not found"
+        )
+
+    return customer

@@ -117,6 +117,8 @@ function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
                   key={medicine.medicine_id}
                   value={medicine.medicine_id}
                 >{medicine.medicine_name}
+                {" - "}
+                {medicine.manufacturer}
                 </option>
               )
             )}

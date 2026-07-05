@@ -42,6 +42,7 @@ class InventoryDetailedResponse(BaseModel):
 
     distributor_id: int
     distributor_name: str
+    manufacturer: str
 
     batch_number: str
 

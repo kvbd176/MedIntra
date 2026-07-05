@@ -30,6 +30,23 @@ def create_invoice(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
+    if not invoice_data.customer_name.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Customer name is required"
+        )
+
+    if not invoice_data.phone_number.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Phone number is required"
+        )
+
+    if len(invoice_data.items) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Add at least one medicine"
+        )
 
     user = db.query(User).filter(
         User.email == current_user["sub"]
@@ -121,6 +138,11 @@ def create_invoice(
         db.add(invoice_item)
 
         batch.quantity -= item.quantity
+
+        medicine = db.query(Medicine).filter(
+            Medicine.medicine_id == item.medicine_id
+        ).first()
+        medicine.quantity -= item.quantity
 
         total_amount += subtotal
 
