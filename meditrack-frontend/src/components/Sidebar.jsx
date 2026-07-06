@@ -1,54 +1,115 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
+import {
+  LayoutDashboard,
+  Pill,
+  Boxes,
+  Users,
+  Truck,
+  Receipt,
+  FileText,
+  Bot
+} from "lucide-react";
 
 function Sidebar() {
+
+  const location = useLocation();
+
+  const menu = [
+    {
+      name:"Dashboard",
+      path:"/dashboard",
+      icon:<LayoutDashboard size={18}/>
+    },
+    {
+      name:"Medicines",
+      path:"/medicines",
+      icon:<Pill size={18}/>
+    },
+    {
+      name:"Inventory",
+      path:"/inventory",
+      icon:<Boxes size={18}/>
+    },
+    {
+      name:"Customers",
+      path:"/customers",
+      icon:<Users size={18}/>
+    },
+    {
+      name:"Distributors",
+      path:"/distributors",
+      icon:<Truck size={18}/>
+    },
+    {
+      name:"Billing",
+      path:"/billing",
+      icon:<Receipt size={18}/>
+    },
+    {
+      name:"Invoices",
+      path:"/invoices",
+      icon:<FileText size={18}/>
+    },
+    {
+      name:"AI Assistant",
+      path:"/ai",
+      icon:<Bot size={18}/>
+    }
+  ];
+
   return (
     <div
-      style={{
-        width: "250px",
-        height: "100vh",
-        background: "#1e293b",
-        color: "white",
-        padding: "20px"
-      }}
+      className="
+      w-72
+      bg-slate-900
+      border-r
+      border-slate-800
+      min-h-screen
+      p-6
+      "
     >
-      <h2>MediTrack Pro</h2>
 
-      <hr />
+      <h1 className="text-3xl font-bold text-cyan-400">
+        MediTrack Pro
+      </h1>
 
-      <p>
-        <Link
-          to="/dashboard"
-          style={{ color: "white" }}
-        >
-          Dashboard
-        </Link>
+      <p className="text-slate-500 text-sm mt-1">
+        AI Powered Pharmacy
       </p>
 
-      <p><Link to="/medicines">
-        Medicines
-      </Link></p>
+      <div className="mt-10 flex flex-col gap-2">
 
-      <p><Link to="/inventory">
-        Inventory
-      </Link></p>
+        {menu.map((item)=>(
 
-      <p><Link to="/customers">
-        Customers
-      </Link></p>
+          <Link
+            key={item.name}
+            to={item.path}
+            className={`
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-xl
+              transition-all
 
-      <p><Link to="/distributors">
-        Distributors
-      </Link></p>
+              ${
+                location.pathname===item.path
+                ?
+                "bg-cyan-500/20 text-cyan-400"
+                :
+                "text-slate-300 hover:bg-slate-800 hover:text-cyan-300"
+              }
+            `}
+          >
+            {item.icon}
+            {item.name}
+          </Link>
 
-      <p><Link to="/billing">
-        Billing
-      </Link></p>
+        ))}
 
-      <p><Link to="/invoices">
-        Invoices
-      </Link></p>
-
-      <p>AI Assistant</p>
+      </div>
 
     </div>
   );

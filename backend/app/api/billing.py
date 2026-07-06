@@ -156,3 +156,26 @@ def create_invoice(
         "phone_number": customer.phone_number,
         "total_amount": total_amount
     }
+
+@router.get("/medicine-prices")
+def get_medicine_prices(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    user = db.query(User).filter(
+        User.email == current_user["sub"]
+    ).first()
+
+    batches = db.query(
+        InventoryBatch
+    ).filter(
+        InventoryBatch.user_id == user.id
+    ).all()
+
+    return [
+        {
+            "medicine_id": b.medicine_id,
+            "selling_price": b.selling_price
+        }
+        for b in batches
+    ]

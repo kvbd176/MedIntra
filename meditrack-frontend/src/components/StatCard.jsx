@@ -3,13 +3,15 @@ import Card from "./Card";
 function StatCard({ title, value }) {
   return (
     <Card>
-      <h2 className="text-gray-500 text-sm">
-        {title}
-      </h2>
 
-      <h3 className="text-3xl font-bold">
+      <div className="text-slate-400 text-xs uppercase tracking-widest">
+        {title}
+      </div>
+
+      <div className="mt-4 text-4xl font-bold text-cyan-400">
         {value}
-      </h3>
+      </div>
+
     </Card>
   );
 }

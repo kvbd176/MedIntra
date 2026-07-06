@@ -11,7 +11,12 @@ function Dashboard() {
     total_customers: 0,
     total_invoices: 0
   });
-  const [inventoryValue, setInventoryValue] = useState(0);
+  const [inventoryStats, setInventoryStats] = useState({
+    total_purchased_stock_value: 0,
+    current_inventory_value: 0,
+    stock_sold_value: 0,
+    estimated_profit: 0
+  });
   const [lowStock, setLowStock] = useState([]);
   const [expiring, setExpiring] = useState([]);
   useEffect(() => {
@@ -28,15 +33,15 @@ function Dashboard() {
           }
         );
         setSummary(response.data);
-        const inventoryResponse = await api.get(
-        "/dashboard/inventory-value",
+        const stockResponse = await api.get(
+        "/dashboard/stock-summary",
         {
-            headers: {
-            Authorization: `Bearer ${token}`
-            }
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
         }
         );
-        setInventoryValue(inventoryResponse.data.inventory_value);
+        setInventoryStats(stockResponse.data);
         const lowStockResponse = await api.get(
         "/dashboard/low-stock",
         {
@@ -68,27 +73,66 @@ function Dashboard() {
   return(
   <Layout>
 
-      <h1 className="text-4xl font-bold text-blue-600">
+      <h1
+        className="
+        text-5xl
+        font-extrabold
+        bg-gradient-to-r
+        from-cyan-400
+        via-blue-400
+        to-indigo-400
+        text-transparent
+        bg-clip-text
+        "
+      >
         Dashboard
       </h1>
 
-        <div className="grid grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Medicines"
-            value={summary.total_medicines}
-          />
-          <StatCard
-            title="Customers"
-            value={summary.total_customers}
-          />
-          <StatCard
-            title="Invoices"
-            value={summary.total_invoices}
-          />
-          <StatCard
-            title="Inventory Value"
-            value={`₹ ${inventoryValue}`}
-          />
+      <p className="text-slate-400 mt-2 mb-6">
+        Welcome back. Here's your pharmacy overview.
+      </p>
+
+        <div className="space-y-6 mb-8">
+
+          <div className="grid grid-cols-3 gap-6">
+            <StatCard
+              title="Medicines"
+              value={summary.total_medicines}
+            />
+
+            <StatCard
+              title="Customers"
+              value={summary.total_customers}
+            />
+
+            <StatCard
+              title="Invoices"
+              value={summary.total_invoices}
+            />
+          </div>
+
+          <div className="grid grid-cols-4 gap-6">
+            <StatCard
+              title="Purchased Stock"
+              value={`₹ ${inventoryStats.total_purchased_stock_value}`}
+            />
+
+            <StatCard
+              title="Current Inventory"
+              value={`₹ ${inventoryStats.current_inventory_value}`}
+            />
+
+            <StatCard
+              title="Stock Sold Value"
+              value={`₹ ${inventoryStats.stock_sold_value}`}
+            />
+
+            <StatCard
+              title="Profit"
+              value={`₹ ${inventoryStats.estimated_profit}`}
+            />
+          </div>
+
         </div>
 
 

@@ -20,6 +20,7 @@ from app.api.auth import router as auth_router
 from app.api.billing import router as billing_router
 from app.api.pdf import router as pdf_router
 from app.api.dashboard import router as dashboard_router
+from app.api.ai import router as ai_router
 
 app = FastAPI(
     title="MediTrack Pro API"
@@ -46,6 +47,7 @@ app.include_router(billing_router)
 app.include_router(invoice_router)
 app.include_router(pdf_router)
 app.include_router(dashboard_router)
+app.include_router(ai_router)
 
 Base.metadata.create_all(bind=engine)
 

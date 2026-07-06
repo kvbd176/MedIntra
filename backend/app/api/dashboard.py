@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 from app.auth.dependencies import get_current_user
+from app.models.inventory_batch import InventoryBatch
 
 from app.models.user import User
 from app.models.medicine import Medicine
@@ -192,3 +193,40 @@ def total_sales(
     return {
         "total_sales": total_sales
     }
+
+@router.get("/stock-summary")
+def stock_summary(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    user = db.query(User).filter(
+        User.email == current_user["sub"]
+    ).first()
+
+    batches = db.query(
+        InventoryBatch
+    ).filter(
+        InventoryBatch.user_id == user.id
+    ).all()
+
+    total_purchased = 0
+    current_inventory = 0
+    stock_sold_value = 0
+    profit=0
+
+    for batch in batches:
+        purchased_value=(batch.initial_quantity*batch.cost_price)
+        current_value=(batch.quantity*batch.cost_price)
+        sold_quantity=(batch.initial_quantity-batch.quantity)
+        sold_value=(sold_quantity*batch.selling_price)
+        total_purchased+=purchased_value
+        current_inventory+=current_value
+        stock_sold_value+=sold_value
+
+    return {
+        "total_purchased_stock_value": total_purchased,
+        "current_inventory_value": current_inventory,
+        "stock_sold_value": stock_sold_value,
+        "estimated_profit":stock_sold_value-(total_purchased-current_inventory)
+        }

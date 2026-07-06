@@ -12,6 +12,8 @@ import Customers from "./pages/Customers";
 import Distributors from "./pages/Distributors";
 import Billing from "./pages/Billing";
 import Invoices from "./pages/Invoices";
+import AIAssistant from "./pages/AIAssistant";
+import Register from "./pages/Register";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -79,6 +81,20 @@ function App() {
         <Route
           path="/invoices"
           element={<Invoices />}
+        />
+
+        <Route
+          path="/ai"
+          element={
+            <ProtectedRoute>
+              <AIAssistant />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
         />
 
       </Routes>
