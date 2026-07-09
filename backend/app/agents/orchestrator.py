@@ -83,6 +83,11 @@ class PharmacyOrchestrator:
             "stock value" in q
         ):
             return self.inventory_agent.inventory_value()
+        if (
+            "expired medicines" in q or
+            "expired stock" in q
+        ):
+            return self.inventory_agent.expired_medicines()
 
         # =========================
         # SALES

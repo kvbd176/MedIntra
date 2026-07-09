@@ -1,33 +1,34 @@
 import { useState } from "react";
 import api from "../api/axios";
 import Layout from "../components/Layout";
+import ReactMarkdown from "react-markdown";
 
 function AIAssistant() {
 
   const [query,setQuery]=useState("");
   const [response,setResponse]=useState("");
+  const [loading,setLoading] = useState(false);
 
-  const askAI=async()=>{
-
+  const askAI = async () => {
+  try{
+    setLoading(true);
     const token=localStorage.getItem("token");
-
     const res=await api.post(
       "/ai/chat",
       {query},
-      {
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-      }
+      {headers: { Authorization: `Bearer ${token}`}}
     );
-
-    setResponse(
-      JSON.stringify(
-        res.data,
-        null,
-        2
-      )
-    );
+    setResponse(res.data.answer);
+    } 
+    catch(error){
+      console.log(error);
+      setResponse(
+        "AI Assistant is temporarily unavailable. Daily AI usage limit may have been reached. Please try again later."
+      );
+    } 
+    finally{
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,6 +57,7 @@ function AIAssistant() {
 
         <button
           onClick={askAI}
+          disabled={loading}
           className="
           mt-4
           bg-cyan-500
@@ -66,23 +68,28 @@ function AIAssistant() {
           font-bold
           "
         >
-          Ask AI
+          {loading ? "Thinking..." : "Ask AI"}
         </button>
 
-        <div
-        className="
-        mt-6
-        bg-slate-900
-        border
-        border-slate-800
-        rounded-xl
-        p-6
-        whitespace-pre-wrap
-        text-slate-200
-        "
-        >
-        {response}
-        </div>
+        {response && (
+          <div
+            className="
+            mt-6
+            bg-slate-900
+            border
+            border-slate-800
+            rounded-xl
+            p-6
+            whitespace-pre-wrap
+            text-slate-200
+            leading-relaxed
+            "
+          >
+            <ReactMarkdown>
+              {response}
+            </ReactMarkdown>
+          </div>
+        )}
 
       </div>
 

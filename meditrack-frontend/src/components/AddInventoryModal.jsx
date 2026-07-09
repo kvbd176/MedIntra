@@ -4,6 +4,46 @@ import api from "../api/axios";
 function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
   const[medicines,setMedicines]=useState([]);
   const[distributors,setDistributors]=useState([]);
+  const inputStyle = `
+  w-full
+  bg-slate-950
+  border
+  border-slate-700
+  rounded-xl
+  px-4
+  py-3
+  text-white
+  focus:border-cyan-500
+  outline-none
+  `;
+
+  const labelStyle = `
+  block
+  text-slate-300
+  font-medium
+  mb-1
+  `;
+
+  const saveButtonStyle = `
+  bg-cyan-500
+  hover:bg-cyan-400
+  text-black
+  font-bold
+  px-4
+  py-2
+  rounded-xl
+  transition
+  `;
+
+  const cancelButtonStyle = `
+  bg-slate-700
+  hover:bg-slate-600
+  text-white
+  px-4
+  py-2
+  rounded-xl
+  transition
+  `;
   const[formData,setFormData]=
     useState({
       medicine_id: "",
@@ -89,97 +129,92 @@ function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
   };
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl shadow-lg p-6 w-[700px] max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-6">
-          Add Inventory
-        </h2>
+  <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+    <div className="w-[700px] max-h-[90vh] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6">
+      <h2 className="text-2xl font-bold text-cyan-400 mb-6">
+        Add Inventory
+      </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4"
+      <form onSubmit={handleSubmit} className="space-y-4">
+
+        <select
+          name="medicine_id"
+          value={formData.medicine_id}
+          onChange={handleChange}
+          className={inputStyle}
+          required
         >
-          <select
-            name="medicine_id"
-            value={formData.medicine_id}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          >
-
-            <option value="">
-              Select Medicine
+          <option value="">Select Medicine</option>
+          {medicines.map((medicine) => (
+            <option
+              key={medicine.medicine_id}
+              value={medicine.medicine_id}
+            >
+              {medicine.medicine_name} - {medicine.manufacturer}
             </option>
+          ))}
+        </select>
 
-            {medicines.map(
-              (medicine) => (
-                <option
-                  key={medicine.medicine_id}
-                  value={medicine.medicine_id}
-                >{medicine.medicine_name}
-                {" - "}
-                {medicine.manufacturer}
-                </option>
-              )
-            )}
-          </select>
-
-          <select
-            name="distributor_id"
-            value={formData.distributor_id}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          >
-            <option value="">
-              Select Distributor
+        <select
+          name="distributor_id"
+          value={formData.distributor_id}
+          onChange={handleChange}
+          className={inputStyle}
+          required
+        >
+          <option value="">Select Distributor</option>
+          {distributors.map((distributor) => (
+            <option
+              key={distributor.distributor_id}
+              value={distributor.distributor_id}
+            >
+              {distributor.distributor_name}
             </option>
-            {distributors.map(
-              (distributor)=>(
-                <option
-                  key={distributor.distributor_id}
-                  value={distributor.distributor_id}
-                >{distributor.distributor_name}
-                </option>
-              )
-            )}
-          </select>
+          ))}
+        </select>
 
-          <input
-            type="text"
-            name="batch_number"
-            placeholder="Batch Number"
-            value={formData.batch_number}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
+        <input
+          type="text"
+          name="batch_number"
+          placeholder="Batch Number"
+          value={formData.batch_number}
+          onChange={handleChange}
+          className={inputStyle}
+          required
+        />
 
-          <label className="block mb-1 font-medium">
-            Manufacturing Date
-          </label>
-          <input
-            type="date"
-            name="manufacturing_date"
-            value={formData.manufacturing_date}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelStyle}>
+              Manufacturing Date
+            </label>
+            <input
+              type="date"
+              name="manufacturing_date"
+              value={formData.manufacturing_date}
+              onChange={handleChange}
+              className={inputStyle}
+              required
+            />
+          </div>
 
-          <label className="block mb-1 font-medium">
-            Expiry Date
-          </label>
-          <input
-            type="date"
-            name="expiry_date"
-            value={formData.expiry_date}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
+          <div>
+            <label className={labelStyle}>
+              Expiry Date
+            </label>
+            <input
+              type="date"
+              name="expiry_date"
+              value={formData.expiry_date}
+              onChange={handleChange}
+              className={inputStyle}
+              required
+            />
+          </div>
+        </div>
 
-          <label className="block mb-1 font-medium">
+        <div>
+          <label className={labelStyle}>
             Stock Entry Date
           </label>
           <input
@@ -187,10 +222,12 @@ function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
             name="stock_entry_date"
             value={formData.stock_entry_date}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className={inputStyle}
             required
           />
+        </div>
 
+        <div className="grid grid-cols-2 gap-4">
           <input
             type="number"
             step="0.01"
@@ -198,7 +235,7 @@ function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
             placeholder="Cost Price"
             value={formData.cost_price}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className={inputStyle}
             required
           />
 
@@ -209,24 +246,25 @@ function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
             placeholder="Selling Price"
             value={formData.selling_price}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className={inputStyle}
             required
           />
+        </div>
 
-          <input
-            type="number"
-            name="quantity"
-            placeholder="Quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Quantity"
+          value={formData.quantity}
+          onChange={handleChange}
+          className={inputStyle}
+          required
+        />
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className={saveButtonStyle}
             >
               Save
             </button>
@@ -234,11 +272,12 @@ function AddInventoryModal({isOpen,onClose,onInventoryAdded}){
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              className={cancelButtonStyle}
             >
               Cancel
             </button>
           </div>
+
         </form>
       </div>
     </div>

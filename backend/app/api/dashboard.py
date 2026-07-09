@@ -64,7 +64,8 @@ def inventory_value(
     batches = db.query(
         InventoryBatch
     ).filter(
-        InventoryBatch.user_id == user.id
+        InventoryBatch.user_id == user.id,
+        InventoryBatch.expiry_date>=date.today()
     ).all()
 
     total_value = 0
@@ -95,7 +96,8 @@ def low_stock(
         InventoryBatch
     ).filter(
         InventoryBatch.user_id == user.id,
-        InventoryBatch.quantity <= 10
+        InventoryBatch.quantity <= 10,
+        InventoryBatch.expiry_date>=date.today()
     ).all()
 
     result = []
@@ -105,8 +107,7 @@ def low_stock(
         medicine = db.query(
             Medicine
         ).filter(
-            Medicine.medicine_id ==
-            batch.medicine_id
+            Medicine.medicine_id ==batch.medicine_id
         ).first()
 
         result.append({
@@ -199,34 +200,45 @@ def stock_summary(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-
-    user = db.query(User).filter(
-        User.email == current_user["sub"]
+    user=db.query(User).filter(
+        User.email==current_user["sub"]
     ).first()
 
-    batches = db.query(
-        InventoryBatch
-    ).filter(
-        InventoryBatch.user_id == user.id
+    batches=db.query(InventoryBatch).filter(
+        InventoryBatch.user_id==user.id
     ).all()
 
-    total_purchased = 0
-    current_inventory = 0
-    stock_sold_value = 0
-    profit=0
+    today=date.today()
+
+    total_purchased=0
+    current_inventory=0
+    stock_sold_value=0
+    expired_loss=0
 
     for batch in batches:
-        purchased_value=(batch.initial_quantity*batch.cost_price)
-        current_value=(batch.quantity*batch.cost_price)
-        sold_quantity=(batch.initial_quantity-batch.quantity)
-        sold_value=(sold_quantity*batch.selling_price)
+
+        purchased_value=batch.initial_quantity*batch.cost_price
+        sold_quantity=batch.initial_quantity-batch.quantity
+        sold_value=sold_quantity*batch.selling_price
+
         total_purchased+=purchased_value
-        current_inventory+=current_value
         stock_sold_value+=sold_value
 
+        if batch.expiry_date<today:
+            expired_loss+=batch.quantity*batch.cost_price
+        else:
+            current_inventory+=batch.quantity*batch.cost_price
+
+    profit=(
+        stock_sold_value
+        -(total_purchased-current_inventory)
+        -expired_loss
+    )
+
     return {
-        "total_purchased_stock_value": total_purchased,
-        "current_inventory_value": current_inventory,
-        "stock_sold_value": stock_sold_value,
-        "estimated_profit":stock_sold_value-(total_purchased-current_inventory)
-        }
+        "total_purchased_stock_value":round(total_purchased,2),
+        "current_inventory_value":round(current_inventory,2),
+        "stock_sold_value":round(stock_sold_value,2),
+        "expired_stock_loss":round(expired_loss,2),
+        "estimated_profit":round(profit,2)
+    }

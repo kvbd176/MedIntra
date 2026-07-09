@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import date
 
 from app.models.invoice import Invoice
 from app.models.invoice_item import InvoiceItem
@@ -36,17 +37,25 @@ class SalesAgent:
 
     # Estimated Profit
     def estimated_profit(self):
-        revenue=self.total_revenue()["total_revenue"]
-        investment=self.total_investment()["total_investment"]
-        inventory_value=(
+        today = date.today()
+        revenue = self.total_revenue()["total_revenue"]
+        investment = self.total_investment()["total_investment"]
+        inventory_value = (
             self.current_inventory_value()[
                 "current_inventory_value"
             ]
         )
-        profit=(revenue-(investment -inventory_value))
-        return {
-            "estimated_profit":
-            round(profit, 2)
+        expired_loss = 0
+        batches = self.db.query(InventoryBatch).filter(
+            InventoryBatch.user_id == self.user_id
+        ).all()
+        for batch in batches:
+            if batch.expiry_date<today:
+                expired_loss+=(batch.quantity*batch.cost_price)
+        profit=(revenue-(investment-inventory_value)-expired_loss)
+        return{
+            "estimated_profit":round(profit, 2),
+            "expired_stock_loss":round(expired_loss, 2)
         }
     # Best Selling Medicines
     def best_selling_medicines(self):

@@ -45,8 +45,8 @@ function AddDistributorModal({isOpen,onClose,onDistributorAdded}){
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-xl w-[500px]">
-        <h2 className="text-2xl font-bold mb-4">
+      <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl w-[500px]">
+        <h2 className="text-2xl font-bold mb-4 text-cyan-400">
           Add Distributor
         </h2>
 
@@ -60,7 +60,18 @@ function AddDistributorModal({isOpen,onClose,onDistributorAdded}){
             placeholder="Distributor Name"
             value={formData.distributor_name}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="
+            w-full
+            bg-slate-950
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            focus:border-cyan-500
+            outline-none
+            "
             required
           />
           <input
@@ -69,7 +80,18 @@ function AddDistributorModal({isOpen,onClose,onDistributorAdded}){
             placeholder="Phone"
             value={formData.phone}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="
+            w-full
+            bg-slate-950
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            focus:border-cyan-500
+            outline-none
+            "
           />
           <input
             type="email"
@@ -77,14 +99,36 @@ function AddDistributorModal({isOpen,onClose,onDistributorAdded}){
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="
+            w-full
+            bg-slate-950
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            focus:border-cyan-500
+            outline-none
+            "
           />
           <textarea
             name="address"
             placeholder="Address"
             value={formData.address}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="
+            w-full
+            bg-slate-950
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            focus:border-cyan-500
+            outline-none
+            "
           />
           <div className="flex gap-2">
             <button

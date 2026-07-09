@@ -45,8 +45,8 @@ function AddCustomerModal({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-xl w-96">
-        <h2 className="text-2xl font-bold mb-4">
+      <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl w-96">
+        <h2 className="text-2xl font-bold mb-4 text-cyan-400">
           Add Customer
         </h2>
 
@@ -61,7 +61,18 @@ function AddCustomerModal({
             placeholder="Customer Name"
             value={formData.customer_name}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="
+            w-full
+            bg-slate-950
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            focus:border-cyan-500
+            outline-none
+            "
             required
           />
 
@@ -71,7 +82,18 @@ function AddCustomerModal({
             placeholder="Phone Number"
             value={formData.phone_number}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="
+            w-full
+            bg-slate-950
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            focus:border-cyan-500
+            outline-none
+            "
             required
           />
 

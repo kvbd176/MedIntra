@@ -35,19 +35,30 @@ function Invoices() {
       ||
       invoice.invoice_id?.toString().includes(search)
     );
-  const viewInvoice=async(invoiceId)=>{
-    try {
-      const token=localStorage.getItem("token");
-      const response =
-        await api.get(`/invoices/${invoiceId}`,
-          {
-            headers:{Authorization:`Bearer ${token}`}
-          }
-        );
-      setSelectedInvoice(response.data);
-      setShowModal(true);
+  
+  const viewInvoice = async (invoiceId) => {
+  try{
+    const token=localStorage.getItem("token");
+    const response=await api.get(
+      `/pdf/invoice/${invoiceId}`,
+      {
+        responseType: "blob",
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    const fileURL=window.URL.createObjectURL(
+        new Blob([response.data],{
+          type: "application/pdf"
+        })
+      );
+      window.open(fileURL, "_blank");
+    } 
+    catch(error){
+      console.log(error);
+      alert("Failed to open invoice");
     }
-    catch(error){console.log(error);}
   };
 
   const downloadPDF=async(invoiceId)=>{
