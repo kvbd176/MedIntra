@@ -77,7 +77,7 @@ function Login() {
         bg-clip-text
         text-transparent
         ">
-          MediTrack Pro
+          MedIntra
         </h1>
 
         <p className="
