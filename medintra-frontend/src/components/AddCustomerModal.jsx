@@ -39,7 +39,15 @@ function AddCustomerModal({
         phone_number: ""
       });
     }
-    catch(error){console.log(error);}
+    catch(error){
+      console.log(error);
+      if(error.response){
+        alert(error.response.data.detail);
+      }
+      else{
+        alert("Failed to add customer");
+      }
+    }
   };
 
   if (!isOpen) return null;

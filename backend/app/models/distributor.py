@@ -8,33 +8,12 @@ from datetime import datetime
 
 from app.database.database import Base
 
-
 class Distributor(Base):
     __tablename__ = "distributors"
-    distributor_id = Column(
-        Integer,
-        primary_key=True,
-        index=True
-    )
-    distributor_name = Column(
-        String,
-        nullable=False
-    )
-    phone = Column(
-        String
-    )
-    email = Column(
-        String
-    )
-    address = Column(
-        String
-    )
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow
-    )
-    user_id = Column(
-    Integer,
-    ForeignKey("users.id"),
-    nullable=False
-    )
+    distributor_id = Column(Integer,primary_key=True,index=True)
+    distributor_name = Column(String,nullable=False)
+    phone = Column(String,nullable=False)
+    email = Column(String)
+    address = Column(String)
+    created_at = Column(DateTime,default=datetime.utcnow)
+    user_id = Column(Integer,ForeignKey("users.id"),nullable=False)

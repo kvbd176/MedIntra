@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date
+from sqlalchemy import func
 
 from app.auth.dependencies import get_current_user
 from app.database.database import get_db
@@ -28,38 +29,44 @@ def add_medicine(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    user=db.query(User).filter(
-        User.email==current_user["sub"]
+    user = db.query(User).filter(
+        User.email == current_user["sub"]
     ).first()
-
-    new_medicine=Medicine(
+    existing_medicine = db.query(Medicine).filter(
+    Medicine.user_id == user.id,
+    func.lower(Medicine.medicine_name) == medicine.medicine_name.strip().lower(),
+    func.lower(Medicine.manufacturer) == medicine.manufacturer.strip().lower()
+    ).first()
+    if existing_medicine:
+        raise HTTPException(
+            status_code=400,
+            detail="Medicine already exists for this manufacturer"
+        )
+    new_medicine = Medicine(
         medicine_name=medicine.medicine_name,
         manufacturer=medicine.manufacturer,
         quantity=0,
         user_id=user.id
     )
-
     db.add(new_medicine)
     db.commit()
     db.refresh(new_medicine)
-
     return new_medicine
 
 
-@router.get(
-    "/",
-    response_model=list[MedicineResponse]
-)
+@router.get("/",response_model=list[MedicineResponse])
 def get_medicines(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    user=db.query(User).filter(
-        User.email==current_user["sub"]
+    user = db.query(User).filter(
+        User.email == current_user["sub"]
     ).first()
 
+    recalculate_user_stock(db, user)
+
     return db.query(Medicine).filter(
-        Medicine.user_id==user.id
+        Medicine.user_id == user.id
     ).all()
 
 
@@ -95,38 +102,25 @@ def search_medicine_with_manufacturer(
     return result
 
 
-@router.post("/recalculate-stock")
-def recalculate_stock(
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
-):
-    user=db.query(User).filter(
-        User.email==current_user["sub"]
-    ).first()
-
-    medicines=db.query(Medicine).filter(
-        Medicine.user_id==user.id
+def recalculate_user_stock(db, user):
+    medicines = db.query(Medicine).filter(
+        Medicine.user_id == user.id
     ).all()
 
-    today=date.today()
+    today = date.today()
 
     for medicine in medicines:
-
-        valid_stock=db.query(
+        valid_stock = db.query(
             InventoryBatch
         ).filter(
-            InventoryBatch.user_id==user.id,
-            InventoryBatch.medicine_id==medicine.medicine_id,
-            InventoryBatch.expiry_date>=today
+            InventoryBatch.user_id == user.id,
+            InventoryBatch.medicine_id == medicine.medicine_id,
+            InventoryBatch.expiry_date >= today
         ).all()
 
-        medicine.quantity=sum(
+        medicine.quantity = sum(
             batch.quantity
             for batch in valid_stock
         )
 
     db.commit()
-
-    return {
-        "message":"Stock recalculated successfully"
-    }

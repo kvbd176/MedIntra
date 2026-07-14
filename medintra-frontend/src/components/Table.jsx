@@ -1,6 +1,6 @@
 function Table({ headers, children }) {
   return (
-    <table className="w-full border">
+    <table className="w-full border border-slate-800">
       <thead>
         <tr>
           {headers.map((header) => (

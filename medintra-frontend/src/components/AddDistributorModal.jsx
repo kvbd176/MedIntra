@@ -38,7 +38,11 @@ function AddDistributorModal({isOpen,onClose,onDistributorAdded}){
         address: ""
       });
     }
-    catch(error) {console.log(error);}
+    catch (error) {
+      console.log(error);
+      if (error.response) { alert(error.response.data.detail); }
+      else { alert("Failed to add distributor"); }
+    }
   };
 
   if (!isOpen) return null;

@@ -74,9 +74,26 @@ function Medicines() {
   return (
     <Layout>
 
-      <h1 className="text-4xl font-bold text-blue-600 mb-8">
-        Medicines
-      </h1>
+      <div className="mb-8">
+        <h1
+          className="
+          text-5xl
+          font-extrabold
+          bg-gradient-to-r
+          from-cyan-400
+          via-blue-400
+          to-indigo-400
+          text-transparent
+          bg-clip-text
+          "
+        >
+          Medicines
+        </h1>
+
+        <p className="text-slate-400 mt-2">
+          Manage medicine catalog and stock availability.
+        </p>
+      </div>
 
       <Card>
 
@@ -94,6 +111,10 @@ function Medicines() {
 
           </div>
 
+          <p className="text-sm text-slate-400 mt-2">
+            Showing {filteredMedicines.length} medicines
+          </p>
+
           <Button
             onClick={() =>
               setShowModal(true)
@@ -102,6 +123,29 @@ function Medicines() {
             Add Medicine
           </Button>
 
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card>
+            <p className="text-slate-400">Total Medicines</p>
+            <h2 className="text-3xl font-bold text-cyan-400">
+              {medicines.length}
+            </h2>
+          </Card>
+
+          <Card>
+            <p className="text-slate-400">Manufacturers</p>
+            <h2 className="text-3xl font-bold text-green-400">
+              {[...new Set(medicines.map(m => m.manufacturer))].length}
+            </h2>
+          </Card>
+
+          <Card>
+            <p className="text-slate-400">Total Stock</p>
+            <h2 className="text-3xl font-bold text-yellow-400">
+              {medicines.reduce((sum,m)=>sum+m.quantity,0)}
+            </h2>
+          </Card>
         </div>
 
         <Table
@@ -131,7 +175,19 @@ function Medicines() {
                 <td className="border p-2">
                   {medicine.manufacturer}
                 </td>
-                <td className="border p-2">{medicine.quantity}</td>
+                <td className="border p-2">
+                  <span
+                    className={
+                      medicine.quantity < 10
+                      ? "text-red-400 font-bold"
+                      : medicine.quantity < 50
+                      ? "text-yellow-400 font-bold"
+                      : "text-green-400 font-bold"
+                    }
+                  >
+                    {medicine.quantity}
+                  </span>
+                </td>
 
               </tr>
 
@@ -141,6 +197,15 @@ function Medicines() {
         </Table>
 
       </Card>
+      {
+      filteredMedicines.length===0 && (
+        <div className="text-center py-10">
+          <p className="text-slate-400">
+            No medicines found.
+          </p>
+        </div>
+      )
+      }
 
       <AddMedicineModal
         isOpen={showModal}

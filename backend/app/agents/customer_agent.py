@@ -105,23 +105,13 @@ class CustomerAgent:
         return None
     
     def best_customer(self):
-
         customers = self.top_customers()
-
         if not customers:
-            return {
-                "message":"No customers found"
-            }
-
+            return {"message":"No customers found"}
         return customers[0]
     
     def most_frequent_customer(self):
-
         customers = self.frequent_customers()
-
         if not customers:
-            return {
-                "message":"No customers found"
-            }
-
+            return {"message":"No customers found"}
         return customers[0]

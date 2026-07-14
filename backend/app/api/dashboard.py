@@ -22,29 +22,18 @@ def dashboard_summary(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-
     user = db.query(User).filter(
         User.email == current_user["sub"]
     ).first()
-
-    total_medicines = db.query(
-        Medicine
-    ).filter(
+    total_medicines = db.query(Medicine).filter(
         Medicine.user_id == user.id
     ).count()
-
-    total_customers = db.query(
-        Customer
-    ).filter(
+    total_customers = db.query(Customer).filter(
         Customer.user_id == user.id
     ).count()
-
-    total_invoices = db.query(
-        Invoice
-    ).filter(
+    total_invoices = db.query(Invoice).filter(
         Invoice.user_id == user.id
     ).count()
-
     return {
         "total_medicines": total_medicines,
         "total_customers": total_customers,
@@ -56,27 +45,16 @@ def inventory_value(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-
     user = db.query(User).filter(
         User.email == current_user["sub"]
     ).first()
-
-    batches = db.query(
-        InventoryBatch
-    ).filter(
+    batches = db.query(InventoryBatch).filter(
         InventoryBatch.user_id == user.id,
         InventoryBatch.expiry_date>=date.today()
     ).all()
-
     total_value = 0
-
     for batch in batches:
-
-        total_value += (
-            batch.quantity *
-            batch.selling_price
-        )
-
+        total_value+=(batch.quantity*batch.selling_price)
     return {
         "inventory_value": total_value
     }
@@ -87,40 +65,20 @@ def low_stock(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-
     user = db.query(User).filter(
         User.email == current_user["sub"]
     ).first()
-
-    batches = db.query(
-        InventoryBatch
-    ).filter(
-        InventoryBatch.user_id == user.id,
-        InventoryBatch.quantity <= 10,
-        InventoryBatch.expiry_date>=date.today()
+    medicines = db.query(Medicine).filter(
+        Medicine.user_id == user.id,
+        Medicine.quantity <= 10
     ).all()
-
     result = []
-
-    for batch in batches:
-
-        medicine = db.query(
-            Medicine
-        ).filter(
-            Medicine.medicine_id ==batch.medicine_id
-        ).first()
-
+    for medicine in medicines:
         result.append({
-            "medicine_name":
-            medicine.medicine_name,
-
-            "batch_number":
-            batch.batch_number,
-
-            "quantity":
-            batch.quantity
+            "medicine_name": medicine.medicine_name,
+            "manufacturer": medicine.manufacturer,
+            "quantity": medicine.quantity
         })
-
     return result
 
 #expiring medicine
@@ -129,47 +87,37 @@ def expiring_medicines(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-
     user = db.query(User).filter(
         User.email == current_user["sub"]
     ).first()
-
     limit_date = date.today() + timedelta(days=30)
-
-    batches = db.query(
-    InventoryBatch
-    ).filter(
+    batches = db.query(InventoryBatch).filter(
         InventoryBatch.user_id == user.id,
         InventoryBatch.expiry_date >= date.today(),
         InventoryBatch.expiry_date <= limit_date
     ).all()
-
-    result = []
-
+    result_dict = {}
     for batch in batches:
-
-        medicine = db.query(
-            Medicine
-        ).filter(
-            Medicine.medicine_id ==
-            batch.medicine_id
+        medicine = db.query(Medicine).filter(
+            Medicine.medicine_id == batch.medicine_id
         ).first()
-
-        result.append({
-            "medicine_name":
+        key = (
             medicine.medicine_name,
-
-            "batch_number":
-            batch.batch_number,
-
-            "expiry_date":
-            batch.expiry_date,
-
-            "days_left":
-            (batch.expiry_date - date.today()).days
-        })
-
-    return result
+            medicine.manufacturer,
+            batch.batch_number
+        )
+        if key not in result_dict:
+            result_dict[key] = {
+                "medicine_name": medicine.medicine_name,
+                "manufacturer": medicine.manufacturer,
+                "batch_number": batch.batch_number,
+                "quantity": batch.quantity,
+                "expiry_date": batch.expiry_date,
+                "days_left": (batch.expiry_date-date.today()).days
+            }
+        else:
+            result_dict[key]["quantity"] += batch.quantity
+    return list(result_dict.values())
 
 @router.get("/sales")
 def total_sales(
@@ -179,18 +127,13 @@ def total_sales(
     user = db.query(User).filter(
         User.email == current_user["sub"]
     ).first()
-
-    invoices = db.query(
-        Invoice
-    ).filter(
+    invoices = db.query(Invoice).filter(
         Invoice.user_id == user.id
     ).all()
-
     total_sales = sum(
         invoice.total_amount
         for invoice in invoices
     )
-
     return {
         "total_sales": total_sales
     }
@@ -203,42 +146,45 @@ def stock_summary(
     user=db.query(User).filter(
         User.email==current_user["sub"]
     ).first()
-
     batches=db.query(InventoryBatch).filter(
         InventoryBatch.user_id==user.id
     ).all()
-
     today=date.today()
-
     total_purchased=0
     current_inventory=0
-    stock_sold_value=0
+
+    invoices = db.query(Invoice).filter(
+        Invoice.user_id == user.id
+    ).all()
+
+    stock_sold_value = sum(
+        invoice.total_amount
+        for invoice in invoices
+    )
     expired_loss=0
-
     for batch in batches:
-
         purchased_value=batch.initial_quantity*batch.cost_price
-        sold_quantity=batch.initial_quantity-batch.quantity
-        sold_value=sold_quantity*batch.selling_price
-
+        
         total_purchased+=purchased_value
-        stock_sold_value+=sold_value
-
+        
         if batch.expiry_date<today:
             expired_loss+=batch.quantity*batch.cost_price
         else:
             current_inventory+=batch.quantity*batch.cost_price
-
-    profit=(
-        stock_sold_value
-        -(total_purchased-current_inventory)
-        -expired_loss
-    )
-
+    profit=(stock_sold_value-(total_purchased-current_inventory)-expired_loss)
     return {
-        "total_purchased_stock_value":round(total_purchased,2),
-        "current_inventory_value":round(current_inventory,2),
-        "stock_sold_value":round(stock_sold_value,2),
-        "expired_stock_loss":round(expired_loss,2),
-        "estimated_profit":round(profit,2)
+        "total_purchased_stock_value": round(total_purchased, 2),
+        "current_inventory_value": round(current_inventory, 2),
+        "stock_sold_value": round(stock_sold_value, 2),
+        "expired_stock_loss": round(expired_loss, 2),
+        "operating_profit": round(
+            stock_sold_value - (total_purchased - current_inventory),
+            2
+        ),
+        "net_profit": round(
+            stock_sold_value -
+            (total_purchased - current_inventory) -
+            expired_loss,
+            2
+        )
     }

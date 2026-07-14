@@ -69,9 +69,14 @@ function AddMedicineModal({
 
       onMedicineAdded();
       onClose();
-    } catch (error) {
+    } 
+    catch (error) {
       console.log(error);
-      alert("Failed to add medicine");
+      if (error.response) {
+        alert(error.response.data.detail);
+      } else {
+        alert("Failed to add medicine");
+      }
     }
   };
 

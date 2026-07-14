@@ -21,29 +21,38 @@ router = APIRouter(
 )
 
 
-@router.post(
-    "/",
-    response_model=CustomerResponse
-)
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import or_
+
+@router.post("/",response_model=CustomerResponse)
 def create_customer(
     customer: CustomerCreate,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
     user = db.query(User).filter(
-    User.email == current_user["sub"]
+        User.email == current_user["sub"]
     ).first()
-
+    existing_customer = db.query(Customer).filter(
+        Customer.user_id == user.id,
+        or_(
+            Customer.customer_name == customer.customer_name,
+            Customer.phone_number == customer.phone_number
+        )
+    ).first()
+    if existing_customer:
+        raise HTTPException(
+            status_code=400,
+            detail="Customer already exists"
+        )
     new_customer = Customer(
         customer_name=customer.customer_name,
         phone_number=customer.phone_number,
         user_id=user.id
     )
-
     db.add(new_customer)
     db.commit()
     db.refresh(new_customer)
-
     return new_customer
 
 

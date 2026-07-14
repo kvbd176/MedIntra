@@ -73,71 +73,30 @@ def get_inventory(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-
-    user = db.query(User).filter(
-        User.email == current_user["sub"]
-    ).first()
-
-    inventory = db.query(
-        InventoryBatch
-    ).filter(
+    user=db.query(User).filter(User.email == current_user["sub"]).first()
+    inventory=db.query(InventoryBatch).filter(
         InventoryBatch.user_id == user.id
     ).all()
-
-    result = []
-
+    result=[]
     for batch in inventory:
-
-        medicine = db.query(Medicine).filter(
-            Medicine.medicine_id ==
-            batch.medicine_id
+        medicine=db.query(Medicine).filter(
+            Medicine.medicine_id==batch.medicine_id
         ).first()
-
-        distributor = db.query(
-            Distributor
-        ).filter(
-            Distributor.distributor_id ==
-            batch.distributor_id
+        distributor=db.query(Distributor).filter(
+            Distributor.distributor_id==batch.distributor_id
         ).first()
-
         result.append({
-
-            "batch_id":
-            batch.batch_id,
-
-            "medicine_id":
-            batch.medicine_id,
-
-            "medicine_name":
-            medicine.medicine_name,
-
-            "distributor_id":
-            batch.distributor_id,
-
-            "distributor_name":
-            distributor.distributor_name,
-
-            "manufacturer":
-            medicine.manufacturer,
-
-            "batch_number":
-            batch.batch_number,
-
-            "initial_quantity":
-            batch.initial_quantity,
-
-            "quantity":
-            batch.quantity,
-
-            "cost_price":
-            batch.cost_price,
-
-            "selling_price":
-            batch.selling_price,
-
-            "expiry_date":
-            batch.expiry_date
-
+            "batch_id":batch.batch_id,
+            "medicine_id":batch.medicine_id,
+            "medicine_name":medicine.medicine_name,
+            "distributor_id":batch.distributor_id,
+            "distributor_name":distributor.distributor_name,
+            "manufacturer":medicine.manufacturer,
+            "batch_number":batch.batch_number,
+            "initial_quantity":batch.initial_quantity,
+            "quantity":batch.quantity,
+            "cost_price":batch.cost_price,
+            "selling_price":batch.selling_price,
+            "expiry_date":batch.expiry_date
         })
-
     return result
