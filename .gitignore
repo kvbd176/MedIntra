@@ -11,5 +11,5 @@ backend/.env
 medintra-frontend/node_modules/
 medintra-frontend/dist/
 
-# PDFs
+# PDF
 *.pdf
