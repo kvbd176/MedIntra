@@ -30,12 +30,12 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-    "http://localhost:5173",
-    "https://med-intra.vercel.app"
+        "http://localhost:5173",
+        "https://med-intra.vercel.app"
     ],
     allow_credentials=True,
-    allow_methods=["https://med-intra.vercel.app"],
-    allow_headers=["https://med-intra.vercel.app"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 #routers
