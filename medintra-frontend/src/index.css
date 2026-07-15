@@ -3,21 +3,21 @@
 body{
   min-height: 100vh;
   font-family: Inter, sans-serif;
-  color: #e2e8f0;
+  color: #f8fafc;
 
   background:
     radial-gradient(circle at top left,
-      rgba(16,185,129,0.25),
-      transparent 35%),
+      rgba(251,191,36,0.15),
+      transparent 30%),
     radial-gradient(circle at bottom right,
-      rgba(20,184,166,0.20),
+      rgba(245,158,11,0.12),
       transparent 40%),
     linear-gradient(
       135deg,
-      #022c22 0%,
-      #052e2b 35%,
-      #0f172a 70%,
-      #020617 100%
+      #000000 0%,
+      #111111 40%,
+      #1a1a1a 70%,
+      #000000 100%
     );
 
   background-attachment: fixed;
