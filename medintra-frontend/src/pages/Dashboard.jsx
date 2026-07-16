@@ -21,8 +21,10 @@ function Dashboard() {
   });
   const [lowStock, setLowStock] = useState([]);
   const [expiring, setExpiring] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchDashboard = async () => {
+      setLoading(true);
       try {
         const token=localStorage.getItem("token");
         const response=await api.get(
@@ -62,15 +64,37 @@ function Dashboard() {
         }
         );
         setExpiring(expiringResponse.data);
-        
-      } catch (error) {
+      } 
+      catch(error){
         console.log(error);
+      }
+      finally{
+        setLoading(false);
       }
     };
     fetchDashboard();
   }, []);
 
+if (loading) {
+      return (
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="bg-slate-900/70 backdrop-blur-md border border-slate-700 rounded-2xl px-10 py-8 shadow-xl">
+            <div className="flex flex-col items-center">
 
+              <div className="w-14 h-14 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+
+              <h2 className="mt-4 text-xl font-semibold">
+                Loading Dashboard
+              </h2>
+              <p className="text-slate-400 text-sm mt-2">
+                Fetching inventory data...
+              </p>
+
+            </div>
+          </div>
+        </div>
+      );
+  }
   
 return (
   <Layout>
