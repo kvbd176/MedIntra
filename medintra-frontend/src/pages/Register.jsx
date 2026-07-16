@@ -10,11 +10,13 @@ function Register() {
   const [pharmacyName,setPharmacyName]=useState("");
   const [ownerName,setOwnerName]=useState("");
   const [phone,setPhone]=useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate=useNavigate();
 
   const handleRegister=async (e) => {
     e.preventDefault();
+    setLoading(true);
     try{
         const payload={
         username,
@@ -41,6 +43,9 @@ function Register() {
             else{
             alert(error.response?.data?.detail || "Registration Failed");
             }
+    }
+    finally{
+      setLoading(false);
     }
     };
 
@@ -172,6 +177,7 @@ function Register() {
 
           <button
             type="submit"
+            disabled={loading}
             className="
             w-full
             bg-cyan-500
@@ -179,9 +185,32 @@ function Register() {
             font-bold
             py-3
             rounded-xl
+            flex
+            justify-center
+            items-center
+            gap-2
+            disabled:opacity-70
+            disabled:cursor-not-allowed
             "
           >
-            Register
+            {loading ? (
+              <>
+                <div
+                  className="
+                  w-5
+                  h-5
+                  border-2
+                  border-black
+                  border-t-transparent
+                  rounded-full
+                  animate-spin
+                  "
+                />
+                Creating Account...
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
 
         </form>
