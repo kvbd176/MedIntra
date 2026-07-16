@@ -69,13 +69,22 @@ function Medicines() {
 
     if (loading) {
       return (
-        <div className="space-y-4 p-6">
-          {[...Array(6)].map((_, index) => (
-            <div
-              key={index}
-              className="h-16 rounded-xl bg-slate-800 animate-pulse"
-            />
-          ))}
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="bg-slate-900/70 backdrop-blur-md border border-slate-700 rounded-2xl px-10 py-8 shadow-xl">
+            <div className="flex flex-col items-center">
+
+              <div className="w-14 h-14 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+
+              <h2 className="mt-4 text-xl font-semibold">
+                Loading Medicines
+              </h2>
+
+              <p className="text-slate-400 text-sm mt-2">
+                Fetching inventory data...
+              </p>
+
+            </div>
+          </div>
         </div>
       );
     }
