@@ -69,8 +69,11 @@ function Medicines() {
 
     if (loading) {
       return (
-        <div className="flex justify-center items-center h-screen">
-          <h2>Loading Medicines...</h2>
+        <div className="flex flex-col items-center justify-center h-[70vh]">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-slate-300 text-lg">
+            Loading Medicines...
+          </p>
         </div>
       );
     }
