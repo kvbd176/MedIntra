@@ -14,14 +14,12 @@ function Medicines() {
   const [medicines, setMedicines] = useState([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchMedicines = async () => {
-
+    setLoading(true);
     try {
-
-      const token =
-        localStorage.getItem("token");
-
+      const token = localStorage.getItem("token");
       const response = await api.get(
         "/medicines/",
         {
@@ -31,16 +29,14 @@ function Medicines() {
           }
         }
       );
-
       setMedicines(response.data);
-
     }
     catch (error) {
-
       console.log(error);
-
     }
-
+    finally {
+    setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -70,6 +66,14 @@ function Medicines() {
       );
 
     });
+
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <h2>Loading Medicines...</h2>
+        </div>
+      );
+    }
 
   return (
     <Layout>
