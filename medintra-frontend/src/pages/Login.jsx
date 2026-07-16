@@ -8,10 +8,11 @@ function Login() {
   const [password,setPassword]=useState("");
 
   const navigate=useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin=async(e)=>{
     e.preventDefault();
-
+    setLoading(true);
     try{
 
       const formData=new URLSearchParams();
@@ -37,6 +38,9 @@ function Login() {
         error.response?.data?.detail ||
         "Login Failed"
       );
+    }
+    finally{
+      setLoading(false);
     }
   };
 
@@ -200,6 +204,7 @@ function Login() {
 
             <button
               type="submit"
+              disabled={loading}
               className="
               w-full
               bg-gradient-to-r
@@ -209,11 +214,32 @@ function Login() {
               font-bold
               py-3
               rounded-xl
-              hover:scale-[1.02]
               transition-all
+              disabled:opacity-70
+              disabled:cursor-not-allowed
               "
             >
-              Login
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+
+                  <div
+                    className="
+                    w-5
+                    h-5
+                    border-2
+                    border-white
+                    border-t-transparent
+                    rounded-full
+                    animate-spin
+                    "
+                  />
+
+                  <span>Signing In...</span>
+
+                </div>
+              ) : (
+                "Login"
+              )}
             </button>
 
             <div className="mt-6 text-center">
